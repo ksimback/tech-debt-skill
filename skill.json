@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "name": "tech-debt-audit",
+  "description": "Whole-repo technical debt and architecture audit protocol that produces file-cited findings.",
+  "entry": "SKILL.md",
+  "primary_output": "TECH_DEBT_AUDIT.md",
+  "source": "https://github.com/ksimback/tech-debt-skill",
+  "runtime_notes": {
+    "claude_code": "Use as /tech-debt-audit.",
+    "portable_agents": "Read SKILL.md and follow the protocol. Use host-native planning and subagent tools when available."
+  }
+}
