@@ -36,7 +36,7 @@ Claude Code ships several skills that touch this space. None of them do what a d
 What this skill adds:
 
 - **Whole-repo scope** across the nine dimensions that actually matter for debt: architectural decay, consistency rot, type & contract debt, test debt, dep & config debt, performance & resource hygiene, error handling & observability, security hygiene, and documentation drift.
-- **Multi-tool grounding.** Detects the stack and runs the right tools — `npm audit`, `knip`, `madge`, `depcheck` for TS/JS; `pip-audit`, `ruff`, `vulture`, `pydeps` for Python; `cargo audit`, `cargo udeps`, `cargo machete` for Rust; `govulncheck`, `staticcheck`, `golangci-lint` for Go — and folds the findings into the report.
+- **Multi-tool grounding.** Detects the stack and runs the right tools when available — `npm audit`, `knip`, `madge`, `depcheck` for TS/JS; `pip-audit`, `ruff`, `vulture`, `pydeps` for Python; `cargo audit`, `cargo udeps`, `cargo machete` for Rust; `govulncheck`, `staticcheck`, `golangci-lint` for Go — and folds the findings into the report. Missing tools are noted instead of blocking the audit.
 - **Subagent dispatch for large repos.** For codebases over ~50k LOC, the protocol parallelizes across modules so the main agent doesn't run out of context window before Phase 3.
 - **Persistent, citable artifact.** `TECH_DEBT_AUDIT.md` lives in your repo. You can commit it, review it in PRs, link to specific findings.
 - **Repeat-run mode.** On subsequent runs, resolved findings are marked `RESOLVED`, stale ones are updated, and new ones are tagged `NEW`. The audit becomes a living document.
@@ -56,13 +56,14 @@ curl -o ~/.claude/skills/tech-debt-audit/SKILL.md https://raw.githubusercontent.
 Project-only install (just this repo):
 
 ```bash
-mkdir -p .claude/skills/tech-debt-audit && curl -o .claude/skills/tech-debt-audit/SKILL.md https://raw.githubusercontent.com/ksimback/tech-debt-skill/main/SKILL.md
+mkdir -p .claude/skills/tech-debt-audit
+curl -o .claude/skills/tech-debt-audit/SKILL.md https://raw.githubusercontent.com/ksimback/tech-debt-skill/main/SKILL.md
 ```
 
 Verify it's available:
 
 ```bash
-claude --print "/skills" | grep tech-debt-audit
+echo "/skills" | claude | grep tech-debt-audit
 ```
 
 ## Usage
@@ -87,6 +88,29 @@ To get a mid-audit course correction (recommended on first run for any new codeb
 
 The best findings often come from things the prompt didn't anticipate.
 
+## Fixture sanity check
+
+This repo includes a tiny intentionally flawed fixture under `examples/toy-python-service`.
+
+Use it to check that the skill:
+
+- does not pad tiny repos to 30 findings,
+- cites concrete `file:line` locations,
+- catches obvious SQL string concatenation and hardcoded secret hygiene issues,
+- includes a "looks bad but is actually fine" section.
+
+The expected shape is documented in:
+
+```text
+examples/toy-python-service/TECH_DEBT_AUDIT.expected.md
+```
+
+To validate that the fixture line citations still match the sample app:
+
+```powershell
+pwsh scripts/validate-fixture.ps1
+```
+
 ## How it works
 
 Three phases:
@@ -96,6 +120,8 @@ Three phases:
 3. **Deliverable** — write `TECH_DEBT_AUDIT.md` with executive summary, mental model, findings table, top-5 priorities, quick wins, the "looks bad but is fine" section, and open questions.
 
 The full protocol is in [`SKILL.md`](./SKILL.md).
+
+Maintainer and adaptation notes are in [`docs/maintainer-notes.md`](./docs/maintainer-notes.md).
 
 ## What the output looks like
 
