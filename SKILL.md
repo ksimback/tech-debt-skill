@@ -37,6 +37,8 @@ Use `rg`, `ast-grep`, and language-native tooling to find concrete examples. Cit
 
 1. **Architectural decay** — circular deps, layering violations, god files (>500 LOC) and god functions, duplicated logic across 3+ sites where an abstraction should exist, abstractions that exist but nobody uses, dead code (unused exports, unreachable branches, stale commented-out blocks).
 
+   Also flag **reinvented wheels**: hand-rolled code for a solved problem (regex URL/email/date validation, custom slugify/debounce/retry/rate-limit/queue/JWT/query-string helpers) where the project already depends on a library that does it, the platform has a built-in, or a well-established library exists; and custom UI components that duplicate one the project's component library already ships (alerts, modals, selects, tooltips, pagination). Cite the custom code and name the replacement. Do not flag real domain logic.
+
 2. **Consistency rot** — multiple ways of doing the same thing (HTTP clients, error handling, logging, config loading, validation, date handling). Naming drift. Folder structure that no longer reflects what the code actually does.
 
 3. **Type & contract debt** — `any` / `unknown` / `as any` / `# type: ignore` / loose dicts. Untyped API boundaries. Missing schema validation at trust boundaries.
